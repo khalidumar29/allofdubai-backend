@@ -6,12 +6,18 @@ import mysql from "mysql2/promise";
 import multer from "multer";
 import path from "path";
 import dotenv from "dotenv";
+import cors from "cors";
 
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 3000;
 
+app.use(
+  cors({
+    origin: "*",
+  })
+);
 app.use(bodyParser.json());
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
@@ -25,7 +31,9 @@ const pool = mysql.createPool({
 
 // Configure Nodemailer
 const transporter = nodemailer.createTransport({
-  service: "gmail", // Replace with your email service
+  host: "mail.allofdubai.com", // Replace with your email service
+  port: 465,
+  secure: true,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
@@ -166,7 +174,7 @@ app.post(
       // Send email to admin attach info and image
       await transporter.sendMail({
         from: process.env.EMAIL_USER,
-        to: "khalid100umar@gmail.com",
+        to: "khalid100umar@gmail.com, vatandoust.rvi@gmail.com",
         subject: "New Form Submission",
         text: `A new form has been submitted by ${name}. Category: ${category}. Additional Info: ${additionalInfo}`,
         // @ts-ignore
